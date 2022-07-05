@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import {userRouter} from './routes/userRoutes.mjs';
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(cors({ credentials: true, origin: 'http://localhost:3000'}))
 app.use(express.static('public'))
 
 // Routes
+app.use('/users', userRouter)
 
 // Start
 app.listen(5000)

@@ -1,5 +1,5 @@
 import mongoose from "../db/conn.mjs";
-import { Schema } from "mongoose";
+const {Schema} = mongoose;
 
 export const Pet = mongoose.model(
   'Pet',

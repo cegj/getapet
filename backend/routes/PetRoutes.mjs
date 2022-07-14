@@ -9,3 +9,4 @@ export const petRouter = express.Router();
 
 petRouter.post('/create', verifyToken, imageUpload.array('images'), PetController.create);
 petRouter.get('/', PetController.getAll);
+petRouter.get('/mypets', verifyToken, PetController.getAllUserPets);

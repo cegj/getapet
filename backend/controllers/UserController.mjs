@@ -4,6 +4,7 @@ import { createUserToken } from "../helpers/create-user-token.mjs";
 import { getToken } from "../helpers/get-token.mjs";
 import jsonwebtoken from "jsonwebtoken";
 import mongoose from "mongoose";
+import { getUserByToken } from "../helpers/get-user-by-token.mjs";
 
 export default class UserController{
   static async register(req, res){
@@ -125,7 +126,7 @@ export default class UserController{
 
     const id = mongoose.Types.ObjectId(req.params.id);
 
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
 
     if(!user){
       res.status(422).json({message: "Usuário não encontrado"});
@@ -133,6 +134,84 @@ export default class UserController{
     }
 
     res.status(200).json({user});
+  }
+
+  static async editUser(req, res){
+
+    const {name, email, phone, password, confirmpassword} = req.body;
+
+    //check if user exists
+    const token = await getToken(req);
+    const user = await getUserByToken(token);
+
+    if(req.file){
+      user.image = req.file.filename; 
+     }
+     
+    //check if user exists
+    if(!user){
+      res.status(422).json({message: "Usuário não encontrado"});
+      return
+    }
+
+    //validations
+
+    if(!name){
+      res.status(422).json({message: "O nome é obrigatório"});
+      return
+    }
+
+    user.name = name;
+
+    if(!email){
+      res.status(422).json({message: "O e-mail é obrigatório"});
+      return
+    }
+
+    // check if e-mails is already took
+    const userExists = await User.findOne({email: email});
+    if(user.email !== email && userExists){
+      res.status(422).json({message: "O e-mail está sendo usado por outro usuário"});
+      return
+    }
+    
+    user.email = email;
+
+    if(!phone){
+      res.status(422).json({message: "O telefone é obrigatório"});
+      return
+    }
+
+    user.phone = phone;
+
+    if (password != confirmpassword){
+      res.status(422).json({ message: "As senhas não conferem"})
+      return
+    } else if (password != null) {
+      
+      const salt = await bcrypt.genSalt(12);
+      const passwordHash = await bcrypt.hash(password, salt);  
+
+      user.password = passwordHash;
+
+    }
+
+    try {
+
+      const updatedUser = await User.findOneAndUpdate(
+      {_id: user.id},
+      {$set: user},
+      {new: true}
+      )
+
+      res.status(200).json({message: "Usuário atualizado com sucesso", updatedUser});
+      
+    } catch (error) {
+      
+      res.status(500).json({message: error});
+      return
+
+    }
 
   }
 }

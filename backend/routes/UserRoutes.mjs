@@ -2,8 +2,8 @@ import express from "express";
 
 import UserController from "../controllers/UserController.mjs";
 
+//middlewares
 import { verifyToken } from "../helpers/verify-token.mjs";
-
 import { imageUpload } from "../helpers/image-uploader.mjs";
 
 export const userRouter = express.Router()

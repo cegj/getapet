@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import {userRouter} from './routes/userRoutes.mjs';
+import { petRouter } from './routes/PetRoutes.mjs';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.static('public'))
 
 // Routes
 app.use('/users', userRouter)
+app.use('/pets', petRouter)
 
 // Start
 app.listen(5000)

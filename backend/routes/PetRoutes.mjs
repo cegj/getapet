@@ -11,3 +11,4 @@ petRouter.post('/create', verifyToken, imageUpload.array('images'), PetControlle
 petRouter.get('/', PetController.getAll);
 petRouter.get('/mypets', verifyToken, PetController.getAllUserPets);
 petRouter.get('/myadoptions', verifyToken, PetController.getAllUserAdoptions);
+petRouter.get('/:id', PetController.getPetById);
